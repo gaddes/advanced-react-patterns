@@ -38,23 +38,31 @@ function ToggleOff({children}) {
 
 // 🐨 get `on` and `toggle` from the ToggleContext with `useContext`
 function ToggleButton(props) {
-  const { on, toggle } = React.useContext(ToggleContext);
-  return <Switch on={on} onClick={toggle} {...props} />
+  // Provide descriptive error message to user if this component is rendered without Context.Provider
+  const context = React.useContext(ToggleContext);
+  if (!context) throw new Error("This component accesses context but there is no Provider in the tree above. Please ensure you wrap this child component with Toggle.");
+
+  return <Switch on={context.on} onClick={context.toggle} {...props} />
 }
 
-function App() {
-  return (
-    <div>
-      <Toggle>
-        <ToggleOn>The button is on</ToggleOn>
-        <ToggleOff>The button is off</ToggleOff>
-        <div>
-          <ToggleButton />
-        </div>
-      </Toggle>
-    </div>
-  )
-}
+// function App() {
+//   return (
+//     <div>
+//       <Toggle>
+//         <ToggleOn>The button is on</ToggleOn>
+//         <ToggleOff>The button is off</ToggleOff>
+//         <div>
+//           <ToggleButton />
+//         </div>
+//       </Toggle>
+//     </div>
+//   )
+// }
+
+// This doesn't work because ToggleContext.Provider is created in Toggle function.
+// Attempting to render a child component like ToggleButton without first wrapping
+// it with Context.Provider means the component will not have access to our context!
+const App = () => <ToggleButton />
 
 export default App
 
